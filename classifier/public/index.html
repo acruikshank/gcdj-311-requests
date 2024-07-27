@@ -6,12 +6,53 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>311 Text</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+      .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 12vw;
+        background-color: #f1f1f1;
+        color: white;
+        text-align: center;
+      }
+      .image-upload {
+        position: absolute;
+        left: 1vw;
+        top: 1vw;
+        width: 10vw;
+        height: 10vw;
+        border-radius: 50%;
+        background-color: #666;
+        color: white;
+        font-size: 1em;
+        padding: 0;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      #file {
+        display: none;
+      }
+      #message-input {
+        position: absolute;
+        width: 80vw;
+        height: 5vw;
+        left: 12vw;
+        top: 0;
+        font-size: 24px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+    </style>
   </head>
   <body>
 
     <div class="footer">
       <button id="upload-image" class="image-upload">+</button>
-      <input type="text" id="message-input" style="display: none;">
+      <input id="file" type="file" accept="image/*">
+      <input type="text" id="message-input">
     </div>
     <script src="index.js"></script>
   </body>
