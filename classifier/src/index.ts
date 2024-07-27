@@ -43,8 +43,6 @@ type Response = {
 Respond only in JSON that conforms to the Response type.
 `;
 
-app.use(bodyParser.urlencoded({ extended: false }));
-
 app.get("/", (req: Request, res: Response) => {
   res.send("server ok");
 });
@@ -80,6 +78,43 @@ app.get("/describe", async (req: Request, res: Response) => {
     res.status(500).send("Internal server error");
   }
 });
+
+app.post("/upload", express.raw({ inflate: true, limit: '50mb', type: () => true }), async (req: Request, res: Response) => {
+  if (!req.body || !req.body.length) {
+    return res.status(400).send("imageData parameter is required");
+  }
+
+  console.log("Length:", req.body.length);
+  const dataStart = req.body.toString('utf-8').indexOf('data:image');
+  console.log("DATA:",req.body.toString('utf-8').substring(dataStart, dataStart + 100));
+  // res.send("ok")
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "user", content: [
+          { type: "text", text: "Please describe the contents of the image below" },
+          { type: "image_url", image_url: {
+              url: req.body.toString('utf-8').substring(dataStart)
+            }
+          }
+        ] },
+        { role: "system", content: SYSTEM_PROMPT},
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 256,
+    });
+
+    const data = response.choices[0].message.content;
+    const parsed = JSON.parse(data || "{}")
+    console.log("RESPONSE:", data)
+
+    res.send(parsed);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal server error");
+  }
+})
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
