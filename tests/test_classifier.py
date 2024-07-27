@@ -4,7 +4,7 @@ import requests
 import pytest
 import duckdb
 
-from settings import BASE_URL
+from settings import BASE_URL, MAX_CLASSIFIER_TEST_ROWS
 from classifier.describe import Response
 # used as a fixture do not remove
 from conftest import is_classifier_up
@@ -41,13 +41,12 @@ async def classify_all(image_urls):
 
 @pytest.mark.asyncio
 async def test_classify_subsample(is_classifier_up, conn):
-    test_row_limit = 5 # change this to the max rows to test. Each test will use up your OpenAI API credits
     if not is_classifier_up:
         pytest.skip("Function tests only run if endpoint is up.")
     machine_vision_challenge_csv = 'machine_vision_challenge.csv'
     conn.execute(f"CREATE TABLE images_raw AS SELECT * FROM read_csv('{machine_vision_challenge_csv}')")
     conn.execute(f"CREATE VIEW images AS SELECT * from images_raw where attachment_permissions = 'This is visible to Everyone'")
-    images = conn.execute(f"SELECT * FROM images LIMIT {test_row_limit}").fetchall()
+    images = conn.execute(f"SELECT * FROM images LIMIT {MAX_CLASSIFIER_TEST_ROWS}").fetchall()
     image_urls = [attachment_url for _, _, _, _, _, _, _, attachment_url, _ in images]
     classifications = await classify_all(image_urls)
 
