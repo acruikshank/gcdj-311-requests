@@ -15,7 +15,7 @@ python3 -m venv .venv
 . .venv/bin/activate
 # install python dependencies
 pip install -r requirements.txt
-# download machine_vision_challenge.cv to the folder from Daniel's shared google sheet
+# download machine_vision_challenge.csv to the folder from Daniel's shared google sheet
 # run tests
 PYTHONPATH=. pytest
 ```
